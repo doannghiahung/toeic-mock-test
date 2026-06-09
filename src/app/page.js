@@ -184,14 +184,33 @@ export default function Home() {
     };
   }, []);
   
-  // Scroll focused question in group into view
-  useEffect(() => {
-    if (screen !== "exam") return;
-    const el = document.getElementById(`q-card-${currentQuestion}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // Stop listening section and prompt transition to reading
+  const handleListeningDoneClick = () => {
+    setIsTimerPaused(true);
+    setShowTransition(true);
+    setIsListeningDone(true);
+    if (audioRef.current) {
+      audioRef.current.pause();
     }
-  }, [currentQuestion, screen]);
+  };
+
+  // Explicitly handle grid button clicks, including scroll and transition checks
+  const handleGridClick = (num) => {
+    if (num >= 101 && !isListeningDone) {
+      handleListeningDoneClick();
+      return;
+    }
+    
+    setCurrentQuestion(num);
+    
+    setTimeout(() => {
+      const el = document.getElementById(`q-card-${num}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 50);
+  };
+
 
   
   // Timer interval logic
@@ -393,6 +412,173 @@ export default function Home() {
   
   const stats = screen === "result" ? getExamStats() : null;
   const currentQInfo = questionsData[currentQuestion.toString()];
+
+  // Custom sidebar rendering helper
+  const renderSidebarNavigation = () => {
+    return (
+      <div className="nav-pane">
+        <div className="nav-pane-header">
+          <h3>Phiếu trả lời</h3>
+          <div className="progress-info">
+            <span>Đã làm: {Object.keys(userAnswers).length} / 200</span>
+            <span>{Math.round((Object.keys(userAnswers).length / 200) * 100)}%</span>
+          </div>
+          <div className="progress-bar-bg">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${(Object.keys(userAnswers).length / 200) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+        
+        <div className="grid-container">
+          {[1, 2, 3, 4, 5, 6, 7].map((part) => (
+            <div key={part}>
+              <div className="part-section-title">Part {part}</div>
+              <div className="grid-buttons">
+                {Array.from({ length: 200 }, (_, i) => i + 1)
+                  .filter((num) => getPartFromQuestion(num) === part)
+                  .map((num) => (
+                    <button
+                      key={num}
+                      className={`grid-btn ${currentQuestion === num ? 'active' : ''} ${userAnswers[num] ? 'answered' : ''}`}
+                      onClick={() => handleGridClick(num)}
+                    >
+                      {num}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Custom listening question card rendering helper
+  const renderListeningQuestionCard = (qNum) => {
+    const qInfo = questionsData[qNum.toString()];
+    const isPhoto = qNum >= 1 && qNum <= 6;
+    
+    return (
+      <div
+        key={qNum}
+        id={`q-card-${qNum}`}
+        className={`listening-question-item ${currentQuestion === qNum ? 'highlighted' : ''}`}
+        onClick={() => setCurrentQuestion(qNum)}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div className="question-title" style={{ fontSize: "1.1rem" }}>
+            <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
+              Câu {qNum}:
+            </span>
+            {qInfo.question_text || (isPhoto ? "Quan sát ảnh và chọn đáp án mô tả đúng nhất:" : "Nghe và chọn câu phản hồi phù hợp nhất:")}
+          </div>
+          
+          {isPhoto && getPassageImage(qNum) && (
+            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "450px" }}>
+              <img
+                src={getPassageImage(qNum)}
+                alt={`Part 1 Photo Q${qNum}`}
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+          )}
+          
+          <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "15px" }}>
+            {Object.keys(qInfo.options).map((key) => (
+              <div
+                key={key}
+                className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
+                style={{ flex: "1 1 200px", minWidth: "150px" }}
+                onClick={(e) => {
+                  e.stopPropagation(); // prevent card click
+                  handleSelectOption(qNum, key);
+                  setCurrentQuestion(qNum);
+                }}
+              >
+                <div className="option-circle"></div>
+                <span className="option-letter">({key})</span>
+                <span className="option-text">{qInfo.options[key]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Custom listening grouped questions rendering helper
+  const renderGroupedListeningQuestions = (startNum, endNum) => {
+    const renderedGroups = [];
+    for (let q = startNum; q <= endNum; q += 3) {
+      const qRange = [q, q + 1, q + 2];
+      const hasGraphic = getPassageImage(q) !== null;
+      
+      renderedGroups.push(
+        <div key={q} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
+          <div style={{ display: "flex", gap: "20px", flexDirection: hasGraphic ? "row" : "column", flexWrap: "wrap" }}>
+            {hasGraphic && (
+              <div style={{ flex: "1 1 350px", maxWidth: "500px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden" }}>
+                <img
+                  src={getPassageImage(q)}
+                  alt="Graphic Reference"
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                />
+              </div>
+            )}
+            
+            <div style={{ flex: "2 1 400px", display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div style={{ color: "var(--color-text-muted)", fontSize: "0.9rem", fontWeight: "bold", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
+                NHÓM CÂU HỎI {q} - {q + 2}
+              </div>
+              
+              {qRange.map((qNum) => {
+                const qInfo = questionsData[qNum.toString()];
+                return (
+                  <div
+                    key={qNum}
+                    id={`q-card-${qNum}`}
+                    className={`listening-question-item ${currentQuestion === qNum ? 'highlighted' : ''}`}
+                    style={{ margin: 0, boxShadow: "none", border: "1px solid var(--color-border)" }}
+                    onClick={() => setCurrentQuestion(qNum)}
+                  >
+                    <div className="question-title">
+                      <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
+                        Câu {qNum}:
+                      </span>
+                      {qInfo.question_text || `Chọn đáp án đúng nhất cho câu hỏi số ${qNum}:`}
+                    </div>
+                    
+                    <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "10px" }}>
+                      {Object.keys(qInfo.options).map((key) => (
+                        <div
+                          key={key}
+                          className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
+                          style={{ flex: "1 1 200px", minWidth: "150px", padding: "10px 15px" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectOption(qNum, key);
+                            setCurrentQuestion(qNum);
+                          }}
+                        >
+                          <div className="option-circle" style={{ width: "18px", height: "18px" }}></div>
+                          <span className="option-letter">({key})</span>
+                          <span className="option-text" style={{ fontSize: "0.9rem" }}>{qInfo.options[key]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return renderedGroups;
+  };
+
   
   return (
     <>
@@ -544,133 +730,127 @@ export default function Home() {
           </div>
           
           {/* Main workspace */}
-          <div className="exam-workspace">
-            {/* Left pane - Image or Passage */}
-            <div className="left-pane">
-              {getPassageImage(currentQuestion) ? (
-                <div className="passage-container">
-                  <img
-                    className="passage-image"
-                    src={getPassageImage(currentQuestion)}
-                    alt={`Passage/Image for Question ${currentQuestion}`}
-                  />
+          {currentQuestion <= 100 ? (
+            <div className="listening-workspace">
+              {/* Scrollable list of Q1 to Q100 */}
+              <div className="listening-scroll-area">
+                {/* Part 1 */}
+                <div className="part-header">PART 1: PHOTO DESCRIPTION (Câu 1 - 6)</div>
+                {Array.from({ length: 6 }, (_, i) => i + 1).map((qNum) => renderListeningQuestionCard(qNum))}
+                
+                {/* Part 2 */}
+                <div className="part-header">PART 2: QUESTION-RESPONSE (Câu 7 - 31)</div>
+                {Array.from({ length: 25 }, (_, i) => i + 7).map((qNum) => renderListeningQuestionCard(qNum))}
+                
+                {/* Part 3 */}
+                <div className="part-header">PART 3: CONVERSATIONS (Câu 32 - 70)</div>
+                {renderGroupedListeningQuestions(32, 70)}
+                
+                {/* Part 4 */}
+                <div className="part-header">PART 4: TALKS (Câu 71 - 100)</div>
+                {renderGroupedListeningQuestions(71, 100)}
+                
+                {/* Bottom action button */}
+                <div className="listening-footer-action">
+                  <button className="transition-btn" onClick={handleListeningDoneClick}>
+                    Chuyển sang phần thi Reading
+                  </button>
                 </div>
-              ) : (
-                <div className="listening-placeholder">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 18.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z" />
-                    <path d="M12 10.5v3" />
-                    <path d="M12 15.5v.01" />
-                  </svg>
-                  <h3>Phần thi nghe đang phát (Part {getPartFromQuestion(currentQuestion)})</h3>
-                  <p>Hãy chú ý lắng nghe băng ghi âm và tích chọn câu trả lời ở bên phải.</p>
-                </div>
-              )}
-            </div>
-            
-            {/* Right pane - Current Question Group */}
-            <div className="right-pane">
-              <h2 className="question-group-title">
-                Câu Hỏi {getGroupRangeLabel(currentQuestion)} (Part {getPartFromQuestion(currentQuestion)})
-              </h2>
+              </div>
               
-              <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
-                {getQuestionGroup(currentQuestion).map((qNum) => {
-                  const qInfo = questionsData[qNum.toString()];
-                  return (
-                    <div
-                      key={qNum}
-                      id={`q-card-${qNum}`}
-                      className={`question-card ${currentQuestion === qNum ? 'highlighted' : ''}`}
-                    >
-                      <div className="question-title">
-                        <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
-                          Câu {qNum}:
-                        </span>
-                        {qInfo.question_text || `Chọn đáp án đúng nhất cho câu hỏi số ${qNum}:`}
-                      </div>
-                      
-                      <div className="options-container">
-                        {Object.keys(qInfo.options).map((key) => (
-                          <div
-                            key={key}
-                            className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
-                            onClick={() => {
-                              handleSelectOption(qNum, key);
-                              setCurrentQuestion(qNum); // focus on this question when selected
-                            }}
-                          >
-                            <div className="option-circle"></div>
-                            <span className="option-letter">({key})</span>
-                            <span className="option-text">{qInfo.options[key]}</span>
+              {/* Sidebar navigation */}
+              {renderSidebarNavigation()}
+            </div>
+          ) : (
+            <>
+              <div className="exam-workspace">
+                {/* Left pane - Image or Passage */}
+                <div className="left-pane">
+                  {getPassageImage(currentQuestion) ? (
+                    <div className="passage-container">
+                      <img
+                        className="passage-image"
+                        src={getPassageImage(currentQuestion)}
+                        alt={`Passage/Image for Question ${currentQuestion}`}
+                      />
+                    </div>
+                  ) : (
+                    <div className="listening-placeholder">
+                      <h3>Đang làm phần thi Reading</h3>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Right pane - Current Question Group */}
+                <div className="right-pane">
+                  <h2 className="question-group-title">
+                    Câu Hỏi {getGroupRangeLabel(currentQuestion)} (Part {getPartFromQuestion(currentQuestion)})
+                  </h2>
+                  
+                  <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
+                    {getQuestionGroup(currentQuestion).map((qNum) => {
+                      const qInfo = questionsData[qNum.toString()];
+                      return (
+                        <div
+                          key={qNum}
+                          id={`q-card-${qNum}`}
+                          className={`question-card ${currentQuestion === qNum ? 'highlighted' : ''}`}
+                        >
+                          <div className="question-title">
+                            <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
+                              Câu {qNum}:
+                            </span>
+                            {qInfo.question_text || `Chọn đáp án đúng nhất cho câu hỏi số ${qNum}:`}
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            
-            {/* Sidebar navigation */}
-            <div className="nav-pane">
-              <div className="nav-pane-header">
-                <h3>Phiếu trả lời</h3>
-                <div className="progress-info">
-                  <span>Đã làm: {Object.keys(userAnswers).length} / 200</span>
-                  <span>{Math.round((Object.keys(userAnswers).length / 200) * 100)}%</span>
+                          
+                          <div className="options-container">
+                            {Object.keys(qInfo.options).map((key) => (
+                              <div
+                                key={key}
+                                className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
+                                onClick={() => {
+                                  handleSelectOption(qNum, key);
+                                  setCurrentQuestion(qNum); // focus on this question when selected
+                                }}
+                              >
+                                <div className="option-circle"></div>
+                                <span className="option-letter">({key})</span>
+                                <span className="option-text">{qInfo.options[key]}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="progress-bar-bg">
-                  <div
-                    className="progress-bar-fill"
-                    style={{ width: `${(Object.keys(userAnswers).length / 200) * 100}%` }}
-                  ></div>
-                </div>
+                
+                {/* Sidebar navigation */}
+                {renderSidebarNavigation()}
               </div>
               
-              <div className="grid-container">
-                {[1, 2, 3, 4, 5, 6, 7].map((part) => (
-                  <div key={part}>
-                    <div className="part-section-title">Part {part}</div>
-                    <div className="grid-buttons">
-                      {Array.from({ length: 200 }, (_, i) => i + 1)
-                        .filter((num) => getPartFromQuestion(num) === part)
-                        .map((num) => (
-                          <button
-                            key={num}
-                            className={`grid-btn ${currentQuestion === num ? 'active' : ''} ${userAnswers[num] ? 'answered' : ''}`}
-                            onClick={() => setCurrentQuestion(num)}
-                          >
-                            {num}
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                ))}
+              {/* Footer controls (only for Reading) */}
+              <div className="workspace-footer">
+                <button
+                  className="nav-nav-btn"
+                  disabled={currentQuestion === 101}
+                  onClick={handleBack}
+                >
+                  Quay lại
+                </button>
+                <span style={{ color: "var(--color-text-muted)", fontSize: "0.9rem" }}>
+                  Part {getPartFromQuestion(currentQuestion)}
+                </span>
+                <button
+                  className="nav-nav-btn primary-btn"
+                  disabled={currentQuestion === 200}
+                  onClick={handleNext}
+                >
+                  Câu tiếp theo
+                </button>
               </div>
-            </div>
-          </div>
-          
-          {/* Footer controls */}
-          <div className="workspace-footer">
-            <button
-              className="nav-nav-btn"
-              disabled={currentQuestion === 1}
-              onClick={handleBack}
-            >
-              Quay lại
-            </button>
-            <span style={{ color: "var(--color-text-muted)", fontSize: "0.9rem" }}>
-              Part {getPartFromQuestion(currentQuestion)}
-            </span>
-            <button
-              className="nav-nav-btn primary-btn"
-              disabled={currentQuestion === 200}
-              onClick={handleNext}
-            >
-              Câu tiếp theo
-            </button>
-          </div>
+            </>
+          )}
           
           {/* Transition overlay from Listening to Reading */}
           {showTransition && (
