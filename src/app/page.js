@@ -8,13 +8,71 @@ import {
   getFeedbackText
 } from "../lib/scoreConverter";
 
+// Helper to get group of questions that share the same passage or audio context
+function getQuestionGroup(qNum) {
+  if (qNum >= 1 && qNum <= 6) return [qNum];
+  if (qNum >= 7 && qNum <= 31) return [qNum];
+  if (qNum >= 32 && qNum <= 70) {
+    const start = 32 + Math.floor((qNum - 32) / 3) * 3;
+    return [start, start + 1, start + 2];
+  }
+  if (qNum >= 71 && qNum <= 100) {
+    const start = 71 + Math.floor((qNum - 71) / 3) * 3;
+    return [start, start + 1, start + 2];
+  }
+  if (qNum >= 101 && qNum <= 130) return [qNum];
+  if (qNum >= 131 && qNum <= 146) {
+    const start = 131 + Math.floor((qNum - 131) / 4) * 4;
+    return [start, start + 1, start + 2, start + 3];
+  }
+  
+  const groups = [
+    [147, 148],
+    [149, 150],
+    [151, 152],
+    [153, 154],
+    [155, 156, 157],
+    [158, 159, 160],
+    [161, 162, 163],
+    [164, 165, 166, 167],
+    [168, 169, 170, 171],
+    [172, 173, 174, 175],
+    [176, 177, 178, 179, 180],
+    [181, 182, 183, 184, 185],
+    [186, 187, 188, 189, 190],
+    [191, 192, 193, 194, 195],
+    [196, 197, 198, 199, 200]
+  ];
+  for (const g of groups) {
+    if (g.includes(qNum)) return g;
+  }
+  return [qNum];
+}
+
+function getGroupRangeLabel(qNum) {
+  const group = getQuestionGroup(qNum);
+  if (group.length === 1) return `${qNum} / 200`;
+  return `${group[0]} - ${group[group.length - 1]} / 200`;
+}
+
 // Helper to get passage/photo image path
 function getPassageImage(qNum) {
   if (qNum >= 1 && qNum <= 6) return `/assets/part1_q${qNum}.png`;
+  
+  // Part 3/4 graphics
+  if (qNum >= 65 && qNum <= 67) return "/assets/graphics/graphic_65_67.png";
+  if (qNum >= 68 && qNum <= 70) return "/assets/graphics/graphic_68_70.png";
+  if (qNum >= 92 && qNum <= 94) return "/assets/graphics/graphic_92_94.png";
+  if (qNum >= 95 && qNum <= 97) return "/assets/graphics/graphic_95_97.png";
+  if (qNum >= 98 && qNum <= 100) return "/assets/graphics/graphic_98_100.png";
+  
+  // Part 6 passages
   if (qNum >= 131 && qNum <= 134) return "/assets/passages/passage_131_134.png";
   if (qNum >= 135 && qNum <= 138) return "/assets/passages/passage_135_138.png";
   if (qNum >= 139 && qNum <= 142) return "/assets/passages/passage_139_142.png";
   if (qNum >= 143 && qNum <= 146) return "/assets/passages/passage_143_146.png";
+  
+  // Part 7 passages
   if (qNum >= 147 && qNum <= 148) return "/assets/passages/passage_147_148.png";
   if (qNum >= 149 && qNum <= 150) return "/assets/passages/passage_149_150.png";
   if (qNum >= 151 && qNum <= 152) return "/assets/passages/passage_151_152.png";
@@ -125,6 +183,16 @@ export default function Home() {
       document.removeEventListener("selectstart", handleSelectStart);
     };
   }, []);
+  
+  // Scroll focused question in group into view
+  useEffect(() => {
+    if (screen !== "exam") return;
+    const el = document.getElementById(`q-card-${currentQuestion}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [currentQuestion, screen]);
+
   
   // Timer interval logic
   useEffect(() => {
@@ -500,30 +568,47 @@ export default function Home() {
               )}
             </div>
             
-            {/* Right pane - Current Question */}
+            {/* Right pane - Current Question Group */}
             <div className="right-pane">
               <h2 className="question-group-title">
-                Câu Hỏi {currentQuestion} / 200 (Part {getPartFromQuestion(currentQuestion)})
+                Câu Hỏi {getGroupRangeLabel(currentQuestion)} (Part {getPartFromQuestion(currentQuestion)})
               </h2>
               
-              <div className="question-card">
-                <div className="question-title">
-                  {currentQInfo.question_text || `Chọn đáp án đúng nhất cho câu hỏi số ${currentQuestion}:`}
-                </div>
-                
-                <div className="options-container">
-                  {Object.keys(currentQInfo.options).map((key) => (
+              <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
+                {getQuestionGroup(currentQuestion).map((qNum) => {
+                  const qInfo = questionsData[qNum.toString()];
+                  return (
                     <div
-                      key={key}
-                      className={`option-card ${userAnswers[currentQuestion] === key ? 'selected' : ''}`}
-                      onClick={() => handleSelectOption(currentQuestion, key)}
+                      key={qNum}
+                      id={`q-card-${qNum}`}
+                      className={`question-card ${currentQuestion === qNum ? 'highlighted' : ''}`}
                     >
-                      <div className="option-circle"></div>
-                      <span className="option-letter">({key})</span>
-                      <span className="option-text">{currentQInfo.options[key]}</span>
+                      <div className="question-title">
+                        <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
+                          Câu {qNum}:
+                        </span>
+                        {qInfo.question_text || `Chọn đáp án đúng nhất cho câu hỏi số ${qNum}:`}
+                      </div>
+                      
+                      <div className="options-container">
+                        {Object.keys(qInfo.options).map((key) => (
+                          <div
+                            key={key}
+                            className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
+                            onClick={() => {
+                              handleSelectOption(qNum, key);
+                              setCurrentQuestion(qNum); // focus on this question when selected
+                            }}
+                          >
+                            <div className="option-circle"></div>
+                            <span className="option-letter">({key})</span>
+                            <span className="option-text">{qInfo.options[key]}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             </div>
             
