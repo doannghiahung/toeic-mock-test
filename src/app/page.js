@@ -419,6 +419,60 @@ export default function Home() {
   const stats = screen === "result" ? getExamStats() : null;
   const currentQInfo = questionsData[currentQuestion.toString()];
 
+  // Helper to render the left pane reference image or instructions placeholder
+  const renderLeftPaneImage = (qNum) => {
+    const imgPath = getPassageImage(qNum);
+    const part = getPartFromQuestion(qNum);
+    
+    if (imgPath) {
+      return (
+        <div className="left-pane-image-container">
+          <div className="left-pane-header">
+            Reference Graphic / Passage (Question {getGroupRangeLabel(qNum).split(" / ")[0]})
+          </div>
+          <img
+            src={imgPath}
+            alt={`Reference for Question ${qNum}`}
+            className="left-pane-actual-image"
+          />
+        </div>
+      );
+    }
+    
+    let title = "";
+    let desc = "";
+    if (part === 2) {
+      title = "Part 2: Question-Response";
+      desc = "Listen to the audio questions and responses, then select the best response option (A, B, or C) on the right.";
+    } else if (part === 3) {
+      title = "Part 3: Conversations";
+      desc = "Listen to the audio conversation, then answer the questions on the right. (No graphic reference for this conversation)";
+    } else if (part === 4) {
+      title = "Part 4: Talks";
+      desc = "Listen to the audio talk, then answer the questions on the right. (No graphic reference for this talk)";
+    } else if (part === 5) {
+      title = "Part 5: Incomplete Sentences";
+      desc = "Choose the best word or phrase (A, B, C, or D) to complete each sentence.";
+    } else {
+      title = `Part ${part}`;
+      desc = "Select the best answer option for the questions on the right.";
+    }
+    
+    return (
+      <div className="left-pane-placeholder">
+        <div className="placeholder-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: "48px", height: "48px", color: "var(--color-secondary)", marginBottom: "15px" }}>
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
+        </div>
+        <h3>{title}</h3>
+        <p>{desc}</p>
+      </div>
+    );
+  };
+
   // Custom sidebar rendering helper
   const renderSidebarNavigation = () => {
     return (
@@ -481,16 +535,6 @@ export default function Home() {
             {qInfo.question_text || (isPhoto ? "Observe the photo and choose the best statement:" : "Listen and choose the best response:")}
           </div>
           
-          {isPhoto && getPassageImage(qNum) && (
-            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "950px", width: "100%" }}>
-              <img
-                src={getPassageImage(qNum)}
-                alt={`Part 1 Photo Q${qNum}`}
-                style={{ width: "100%", height: "auto", display: "block" }}
-              />
-            </div>
-          )}
-          
           <div className="options-container" style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
             {Object.keys(qInfo.options).map((key) => (
               <div
@@ -524,16 +568,6 @@ export default function Home() {
       renderedGroups.push(
         <div key={q} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
           <div style={{ display: "flex", gap: "25px", flexDirection: "column" }}>
-            {hasGraphic && (
-              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "950px", width: "100%", margin: "0 auto", padding: "10px", backgroundColor: "#fafafa" }}>
-                <img
-                  src={getPassageImage(q)}
-                  alt="Graphic Reference"
-                  style={{ width: "100%", height: "auto", display: "block" }}
-                />
-              </div>
-            )}
-            
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ color: "var(--color-text-muted)", fontSize: "0.9rem", fontWeight: "bold", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
                 QUESTION GROUP {q} - {q + 2}
@@ -639,16 +673,6 @@ export default function Home() {
       renderedGroups.push(
         <div key={firstQ} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
           <div style={{ display: "flex", gap: "30px", flexDirection: "column" }}>
-            {hasGraphic && (
-              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", backgroundColor: "#fafafa", maxWidth: "950px", width: "100%", margin: "0 auto", padding: "10px" }}>
-                <img
-                  src={getPassageImage(firstQ)}
-                  alt="Reading Passage Reference"
-                  style={{ width: "100%", height: "auto", display: "block" }}
-                />
-              </div>
-            )}
-            
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ color: "var(--color-text-muted)", fontSize: "0.9rem", fontWeight: "bold", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
                 QUESTION GROUP {firstQ} - {lastQ}
@@ -1052,6 +1076,11 @@ export default function Home() {
           {/* Main workspace */}
           {currentQuestion <= 100 ? (
             <div className="listening-workspace">
+              {/* Left pane: Fixed Image/Passage */}
+              <div className="left-image-pane">
+                {renderLeftPaneImage(currentQuestion)}
+              </div>
+              
               {/* Scrollable list of Q1 to Q100 */}
               <div className="listening-scroll-area">
                 {/* Part 1 */}
@@ -1083,6 +1112,11 @@ export default function Home() {
             </div>
           ) : (
             <div className="listening-workspace">
+              {/* Left pane: Fixed Image/Passage */}
+              <div className="left-image-pane">
+                {renderLeftPaneImage(currentQuestion)}
+              </div>
+              
               {/* Scrollable list of Q101 to Q200 */}
               <div className="listening-scroll-area">
                 {/* Part 5 */}
