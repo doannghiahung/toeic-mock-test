@@ -1068,3 +1068,25 @@ input {
   transform: translateY(-2px);
 }
 
+/* Review Page Highlights and Workspace */
+.review-correct {
+  border-left: 5px solid var(--color-correct) !important;
+  background-color: var(--color-correct-light) !important;
+}
+
+.review-wrong {
+  border-left: 5px solid var(--color-wrong) !important;
+  background-color: var(--color-wrong-light) !important;
+}
+
+.review-skipped {
+  border-left: 5px solid var(--color-text-muted) !important;
+  background-color: #f8fafc !important;
+}
+
+.review-workspace {
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+

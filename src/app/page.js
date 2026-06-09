@@ -702,6 +702,203 @@ export default function Home() {
     
     return renderedGroups;
   };
+
+  const renderReviewQuestionCard = (qNum) => {
+    const qInfo = questionsData[qNum.toString()];
+    const isPhoto = qNum >= 1 && qNum <= 6;
+    const correctAns = qInfo.correct_answer;
+    const chosen = userAnswers[qNum];
+    
+    return (
+      <div
+        key={qNum}
+        id={`review-q-${qNum}`}
+        className={`listening-question-item ${chosen === correctAns ? 'review-correct' : chosen ? 'review-wrong' : 'review-skipped'}`}
+        style={{ borderLeftWidth: "5px" }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div className="question-title" style={{ fontSize: "1.1rem" }}>
+            <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
+              Câu {qNum}:
+            </span>
+            {qInfo.question_text || (isPhoto ? "Quan sát ảnh và chọn đáp án mô tả đúng nhất:" : "Nghe và chọn câu phản hồi phù hợp nhất:")}
+            
+            {chosen === correctAns ? (
+              <span className="review-badge-correct" style={{ marginLeft: "10px", fontSize: "0.85rem", backgroundColor: "var(--color-correct-light)", color: "var(--color-correct)", padding: "4px 8px", borderRadius: "6px", fontWeight: "bold" }}>
+                Đúng
+              </span>
+            ) : chosen ? (
+              <span className="review-badge-wrong" style={{ marginLeft: "10px", fontSize: "0.85rem", backgroundColor: "var(--color-wrong-light)", color: "var(--color-wrong)", padding: "4px 8px", borderRadius: "6px", fontWeight: "bold" }}>
+                Sai (Đáp án: {correctAns})
+              </span>
+            ) : (
+              <span className="review-badge-skipped" style={{ marginLeft: "10px", fontSize: "0.85rem", backgroundColor: "#f1f5f9", color: "#64748b", padding: "4px 8px", borderRadius: "6px", fontWeight: "bold" }}>
+                Chưa làm (Đáp án: {correctAns})
+              </span>
+            )}
+          </div>
+          
+          {isPhoto && getPassageImage(qNum) && (
+            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "600px" }}>
+              <img
+                src={getPassageImage(qNum)}
+                alt={`Part 1 Photo Q${qNum}`}
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+          )}
+          
+          <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "15px" }}>
+            {Object.keys(qInfo.options).map((key) => {
+              const isCorrect = key === correctAns;
+              const isChosen = key === chosen;
+              
+              let cardClass = "";
+              if (isCorrect) cardClass = "correct";
+              else if (isChosen) cardClass = "wrong";
+              
+              return (
+                <div
+                  key={key}
+                  className={`modal-option-card ${cardClass}`}
+                  style={{ flex: "1 1 200px", minWidth: "150px", pointerEvents: "none" }}
+                >
+                  <div className="circle">
+                    {isCorrect ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ width: "12px", height: "12px", stroke: "white", strokeWidth: "3" }}>
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : isChosen ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ width: "12px", height: "12px", stroke: "white", strokeWidth: "3" }}>
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    ) : (
+                      <span></span>
+                    )}
+                  </div>
+                  <span className="option-letter">({key})</span>
+                  <span className="option-text">{qInfo.options[key]}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderGroupedReviewQuestions = (startNum, endNum, isPart6) => {
+    const renderedGroups = [];
+    let q = startNum;
+    
+    while (q <= endNum) {
+      const group = getQuestionGroup(q);
+      const firstQ = group[0];
+      const lastQ = group[group.length - 1];
+      const hasGraphic = getPassageImage(firstQ) !== null;
+      
+      renderedGroups.push(
+        <div key={firstQ} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
+          <div style={{ display: "flex", gap: "30px", flexDirection: "column" }}>
+            {hasGraphic && (
+              <div style={{ textAlign: "center", border: "1px solid var(--color-border)", borderRadius: "12px", overflow: "hidden", backgroundColor: "#fafafa", padding: "15px", maxWidth: "800px", margin: "0 auto" }}>
+                <img
+                  src={getPassageImage(firstQ)}
+                  alt="Review Passage Reference"
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                />
+              </div>
+            )}
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div style={{ color: "var(--color-text-muted)", fontSize: "0.95rem", fontWeight: "bold", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
+                NHÓM CÂU HỎI {firstQ} - {lastQ}
+              </div>
+              
+              {group.map((qNum) => {
+                const qInfo = questionsData[qNum.toString()];
+                const correctAns = qInfo.correct_answer;
+                const chosen = userAnswers[qNum];
+                
+                return (
+                  <div
+                    key={qNum}
+                    id={`review-q-${qNum}`}
+                    className={`listening-question-item ${chosen === correctAns ? 'review-correct' : chosen ? 'review-wrong' : 'review-skipped'}`}
+                    style={{ margin: 0, boxShadow: "none", border: "1px solid var(--color-border)", borderLeftWidth: "5px" }}
+                  >
+                    <div className="question-title" style={{ fontSize: "1.05rem", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px" }}>
+                      <span>
+                        <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
+                          Câu {qNum}:
+                        </span>
+                        {qInfo.question_text || "Chọn đáp án thích hợp:"}
+                      </span>
+                      
+                      {chosen === correctAns ? (
+                        <span className="review-badge-correct" style={{ fontSize: "0.8rem", backgroundColor: "var(--color-correct-light)", color: "var(--color-correct)", padding: "3px 6px", borderRadius: "4px", fontWeight: "bold" }}>
+                          Đúng
+                        </span>
+                      ) : chosen ? (
+                        <span className="review-badge-wrong" style={{ fontSize: "0.8rem", backgroundColor: "var(--color-wrong-light)", color: "var(--color-wrong)", padding: "3px 6px", borderRadius: "4px", fontWeight: "bold" }}>
+                          Sai (Đáp án: {correctAns})
+                        </span>
+                      ) : (
+                        <span className="review-badge-skipped" style={{ fontSize: "0.8rem", backgroundColor: "#f1f5f9", color: "#64748b", padding: "3px 6px", borderRadius: "4px", fontWeight: "bold" }}>
+                          Chưa làm (Đáp án: {correctAns})
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "10px" }}>
+                      {Object.keys(qInfo.options).map((key) => {
+                        const isCorrect = key === correctAns;
+                        const isChosen = key === chosen;
+                        
+                        let cardClass = "";
+                        if (isCorrect) cardClass = "correct";
+                        else if (isChosen) cardClass = "wrong";
+                        
+                        return (
+                          <div
+                            key={key}
+                            className={`option-card modal-option-card ${cardClass}`}
+                            style={{ flex: "1 1 200px", minWidth: "150px", padding: "10px 15px", pointerEvents: "none" }}
+                          >
+                            <div className="circle">
+                              {isCorrect ? (
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ width: "12px", height: "12px", stroke: "white", strokeWidth: "3" }}>
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              ) : isChosen ? (
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ width: "12px", height: "12px", stroke: "white", strokeWidth: "3" }}>
+                                  <line x1="18" y1="6" x2="6" y2="18" />
+                                  <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                              ) : (
+                                <span></span>
+                              )}
+                            </div>
+                            <span className="option-letter">({key})</span>
+                            <span className="option-text" style={{ fontSize: "0.9rem" }}>{qInfo.options[key]}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+      
+      q = lastQ + 1;
+    }
+    
+    return renderedGroups;
+  };
   
   return (
     <>
@@ -1002,103 +1199,87 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Detailed analysis table */}
-          <div className="analysis-section">
-            <h2 className="analysis-title">Phân tích chi tiết</h2>
+          {/* Review Workspace */}
+          <h2 className="analysis-title" style={{ marginTop: "50px", marginBottom: "20px" }}>Xem lại đáp án chi tiết</h2>
+          <div className="review-workspace" style={{ display: "flex", gap: "20px", overflow: "hidden", height: "80vh", border: "1px solid var(--color-border)", borderRadius: "16px", backgroundColor: "#f8fafc" }}>
             
-            {/* Tabs */}
-            <div className="tabs-container">
-              {[1, 2, 3, 4, 5, 6, 7].map((part) => (
-                <button
-                  key={part}
-                  className={`tab-btn ${activePartTab === part ? 'active' : ''}`}
-                  onClick={() => setActivePartTab(part)}
-                >
-                  Part {part}
-                </button>
-              ))}
+            {/* Scrollable list of Q1 to Q200 */}
+            <div className="review-scroll-area" style={{ flex: "1", overflowY: "auto", padding: "30px 40px" }}>
+              {/* Part 1 */}
+              <div className="part-header" id="review-part-1">PART 1: PHOTO DESCRIPTION (Câu 1 - 6)</div>
+              {Array.from({ length: 6 }, (_, i) => i + 1).map((qNum) => renderReviewQuestionCard(qNum))}
+              
+              {/* Part 2 */}
+              <div className="part-header" id="review-part-2">PART 2: QUESTION-RESPONSE (Câu 7 - 31)</div>
+              {Array.from({ length: 25 }, (_, i) => i + 7).map((qNum) => renderReviewQuestionCard(qNum))}
+              
+              {/* Part 3 */}
+              <div className="part-header" id="review-part-3">PART 3: CONVERSATIONS (Câu 32 - 70)</div>
+              {renderGroupedReviewQuestions(32, 70, false)}
+              
+              {/* Part 4 */}
+              <div className="part-header" id="review-part-4">PART 4: TALKS (Câu 71 - 100)</div>
+              {renderGroupedReviewQuestions(71, 100, false)}
+              
+              {/* Part 5 */}
+              <div className="part-header" id="review-part-5">PART 5: INCOMPLETE SENTENCES (Câu 101 - 130)</div>
+              {Array.from({ length: 30 }, (_, i) => i + 101).map((qNum) => renderReviewQuestionCard(qNum))}
+              
+              {/* Part 6 */}
+              <div className="part-header" id="review-part-6">PART 6: TEXT COMPLETION (Câu 131 - 146)</div>
+              {renderGroupedReviewQuestions(131, 146, true)}
+              
+              {/* Part 7 */}
+              <div className="part-header" id="review-part-7">PART 7: READING COMPREHENSION (Câu 147 - 200)</div>
+              {renderGroupedReviewQuestions(147, 200, false)}
             </div>
             
-            {/* Table */}
-            <table className="analysis-table">
-              <thead>
-                <tr>
-                  <th style={{ width: "30%" }}>Phân loại câu</th>
-                  <th style={{ width: "12%" }}>Số câu đúng</th>
-                  <th style={{ width: "12%" }}>Số câu sai</th>
-                  <th style={{ width: "12%" }}>Bỏ qua</th>
-                  <th style={{ width: "12%" }}>Độ chính xác</th>
-                  <th style={{ width: "22%" }}>Danh sách câu hỏi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {partCategories[activePartTab].map((cat, i) => {
-                  let correctCount = 0;
-                  let wrongCount = 0;
-                  let skippedCount = 0;
-                  
-                  cat.qNums.forEach((qNum) => {
-                    const chosen = userAnswers[qNum];
-                    const correctAns = questionsData[qNum.toString()].correct_answer;
-                    if (!chosen) skippedCount++;
-                    else if (chosen === correctAns) correctCount++;
-                    else wrongCount++;
-                  });
-                  
-                  const acc = cat.qNums.length > 0 ? Math.round((correctCount / cat.qNums.length) * 100) : 0;
-                  
-                  return (
-                    <tr key={i}>
-                      <td>
-                        <span className="category-name">{cat.name}</span>
-                      </td>
-                      <td>{correctCount}</td>
-                      <td>{wrongCount}</td>
-                      <td>{skippedCount}</td>
-                      <td>
-                        <span className="accuracy-percent">{acc}%</span>
-                      </td>
-                      <td>
-                        <div className="questions-status-list">
-                          {cat.qNums.map((qNum) => {
-                            const chosen = userAnswers[qNum];
-                            const correctAns = questionsData[qNum.toString()].correct_answer;
-                            let statusClass = "skipped";
-                            if (chosen) {
-                              statusClass = chosen === correctAns ? "correct" : "wrong";
-                            }
-                            return (
-                              <span
-                                key={qNum}
-                                className={`status-box ${statusClass}`}
-                                onClick={() => setSelectedReviewQ(qNum)}
-                              >
-                                {qNum}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {/* Total row */}
-                <tr style={{ fontWeight: "bold", backgroundColor: "#fafafa" }}>
-                  <td>Tổng</td>
-                  <td>{stats.partsStats[activePartTab].correct}</td>
-                  <td>
-                    {stats.partsStats[activePartTab].total - stats.partsStats[activePartTab].correct}
-                  </td>
-                  <td>0</td>
-                  <td>
-                    <span className="accuracy-percent">
-                      {Math.round((stats.partsStats[activePartTab].correct / stats.partsStats[activePartTab].total) * 100)}%
-                    </span>
-                  </td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
+            {/* Sidebar Navigation */}
+            <div className="review-sidebar" style={{ width: "250px", borderLeft: "1px solid var(--color-border)", backgroundColor: "#ffffff", overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div style={{ fontWeight: "bold", fontSize: "1rem", color: "var(--color-text-main)", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
+                Danh sách câu hỏi
+              </div>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
+                {[1, 2, 3, 4, 5, 6, 7].map((part) => (
+                  <div key={part}>
+                    <div className="part-section-title" style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", marginBottom: "8px", fontWeight: "bold" }}>
+                      Part {part}
+                    </div>
+                    <div className="grid-buttons" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "6px" }}>
+                      {Array.from({ length: 200 }, (_, i) => i + 1)
+                        .filter((num) => getPartFromQuestion(num) === part)
+                        .map((num) => {
+                          const chosen = userAnswers[num];
+                          const correctAns = questionsData[num.toString()].correct_answer;
+                          const isCorrect = chosen === correctAns;
+                          
+                          let btnClass = "skipped";
+                          if (chosen) {
+                            btnClass = isCorrect ? "correct" : "wrong";
+                          }
+                          
+                          return (
+                            <button
+                              key={num}
+                              className={`grid-btn status-box ${btnClass}`}
+                              style={{ width: "100%", height: "30px", fontSize: "0.8rem", borderRadius: "6px" }}
+                              onClick={() => {
+                                const el = document.getElementById(`review-q-${num}`);
+                                if (el) {
+                                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                                }
+                              }}
+                            >
+                              {num}
+                            </button>
+                          );
+                        })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           
           {/* Action buttons */}
@@ -1129,73 +1310,7 @@ export default function Home() {
         </div>
       )}
       
-      {/* 5. Detailed Review Modal */}
-      {selectedReviewQ && (
-        <div className="modal-overlay" onClick={() => setSelectedReviewQ(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedReviewQ(null)}>
-              &times;
-            </button>
-            
-            <h3 className="modal-title">
-              Đáp Án Chi Tiết - Câu {selectedReviewQ} (Part {getPartFromQuestion(selectedReviewQ)})
-            </h3>
-            
-            <div className="modal-question">
-              {questionsData[selectedReviewQ.toString()].question_text ||
-                `Câu hỏi số ${selectedReviewQ} trong phần nghe (Part ${getPartFromQuestion(selectedReviewQ)})`}
-            </div>
-            
-            {/* Show passage image inside modal for Part 1/6/7 review */}
-            {getPassageImage(selectedReviewQ) && (
-              <div style={{ marginBottom: "20px", textAlign: "center", border: "1px solid var(--color-border)", padding: "10px", borderRadius: "8px" }}>
-                <img
-                  src={getPassageImage(selectedReviewQ)}
-                  alt="Review Visual Reference"
-                  style={{ maxWidth: "100%", maxHeight: "300px", height: "auto", borderRadius: "4px" }}
-                />
-              </div>
-            )}
-            
-            <div className="modal-options">
-              {Object.keys(questionsData[selectedReviewQ.toString()].options).map((key) => {
-                const optText = questionsData[selectedReviewQ.toString()].options[key];
-                const correctAns = questionsData[selectedReviewQ.toString()].correct_answer;
-                const chosen = userAnswers[selectedReviewQ];
-                
-                let cardClass = "";
-                if (key === correctAns) cardClass = "correct";
-                else if (key === chosen && chosen !== correctAns) cardClass = "wrong";
-                
-                return (
-                  <div key={key} className={`modal-option-card ${cardClass}`}>
-                    <div className="circle">
-                      {key === correctAns ? (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      ) : key === chosen ? (
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      ) : (
-                        <span></span>
-                      )}
-                    </div>
-                    <span className="option-letter">({key})</span>
-                    <span className="option-text">{optText}</span>
-                  </div>
-                );
-              })}
-            </div>
-            
-            <button className="modal-btn" onClick={() => setSelectedReviewQ(null)}>
-              Đã rõ
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Modal removed in favor of inline scrollable review */}
     </>
   );
 }
