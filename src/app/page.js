@@ -350,7 +350,7 @@ export default function Home() {
           listeningCorrect,
           readingCorrect,
           timeSpent: spent,
-          date: new Date().toLocaleDateString("vi-VN")
+          date: new Date().toLocaleDateString("en-US")
         })
       });
     } catch (err) {
@@ -424,9 +424,9 @@ export default function Home() {
     return (
       <div className="nav-pane">
         <div className="nav-pane-header">
-          <h3>Phiếu trả lời</h3>
+          <h3>Answer Sheet</h3>
           <div className="progress-info">
-            <span>Đã làm: {Object.keys(userAnswers).length} / 200</span>
+            <span>Completed: {Object.keys(userAnswers).length} / 200</span>
             <span>{Math.round((Object.keys(userAnswers).length / 200) * 100)}%</span>
           </div>
           <div className="progress-bar-bg">
@@ -478,11 +478,11 @@ export default function Home() {
             <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
               Câu {qNum}:
             </span>
-            {qInfo.question_text || (isPhoto ? "Quan sát ảnh và chọn đáp án mô tả đúng nhất:" : "Nghe và chọn câu phản hồi phù hợp nhất:")}
+            {qInfo.question_text || (isPhoto ? "Observe the photo and choose the best statement:" : "Listen and choose the best response:")}
           </div>
           
           {isPhoto && getPassageImage(qNum) && (
-            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "450px" }}>
+            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "750px", width: "100%" }}>
               <img
                 src={getPassageImage(qNum)}
                 alt={`Part 1 Photo Q${qNum}`}
@@ -491,12 +491,12 @@ export default function Home() {
             </div>
           )}
           
-          <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "15px" }}>
+          <div className="options-container" style={{ flexDirection: "column", gap: "12px", width: "100%" }}>
             {Object.keys(qInfo.options).map((key) => (
               <div
                 key={key}
                 className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
-                style={{ flex: "1 1 200px", minWidth: "150px" }}
+                style={{ width: "100%" }}
                 onClick={(e) => {
                   e.stopPropagation(); // prevent card click
                   handleSelectOption(qNum, key);
@@ -523,9 +523,9 @@ export default function Home() {
       
       renderedGroups.push(
         <div key={q} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
-          <div style={{ display: "flex", gap: "20px", flexDirection: hasGraphic ? "row" : "column", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "25px", flexDirection: "column" }}>
             {hasGraphic && (
-              <div style={{ flex: "1 1 350px", maxWidth: "500px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden" }}>
+              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "800px", width: "100%", margin: "0 auto", padding: "10px", backgroundColor: "#fafafa" }}>
                 <img
                   src={getPassageImage(q)}
                   alt="Graphic Reference"
@@ -534,9 +534,9 @@ export default function Home() {
               </div>
             )}
             
-            <div style={{ flex: "2 1 400px", display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ color: "var(--color-text-muted)", fontSize: "0.9rem", fontWeight: "bold", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
-                NHÓM CÂU HỎI {q} - {q + 2}
+                QUESTION GROUP {q} - {q + 2}
               </div>
               
               {qRange.map((qNum) => {
@@ -556,12 +556,12 @@ export default function Home() {
                       {qInfo.question_text || `Chọn đáp án đúng nhất cho câu hỏi số ${qNum}:`}
                     </div>
                     
-                    <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "10px" }}>
+                    <div className="options-container" style={{ flexDirection: "column", gap: "10px", width: "100%" }}>
                       {Object.keys(qInfo.options).map((key) => (
                         <div
                           key={key}
                           className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
-                          style={{ flex: "1 1 200px", minWidth: "150px", padding: "10px 15px" }}
+                          style={{ width: "100%", padding: "10px 15px" }}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleSelectOption(qNum, key);
@@ -600,15 +600,15 @@ export default function Home() {
             <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
               Câu {qNum}:
             </span>
-            {qInfo.question_text || "Chọn đáp án thích hợp:"}
+            {qInfo.question_text || "Select the correct answer:"}
           </div>
           
-          <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "15px" }}>
+          <div className="options-container" style={{ flexDirection: "column", gap: "12px", width: "100%" }}>
             {Object.keys(qInfo.options).map((key) => (
               <div
                 key={key}
                 className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
-                style={{ flex: "1 1 200px", minWidth: "150px" }}
+                style={{ width: "100%" }}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleSelectOption(qNum, key);
@@ -638,9 +638,9 @@ export default function Home() {
       
       renderedGroups.push(
         <div key={firstQ} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
-          <div style={{ display: "flex", gap: "25px", flexDirection: "row", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "30px", flexDirection: "column" }}>
             {hasGraphic && (
-              <div style={{ flex: "1 1 400px", maxWidth: "600px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", backgroundColor: "#fafafa" }}>
+              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", backgroundColor: "#fafafa", maxWidth: "800px", width: "100%", margin: "0 auto", padding: "10px" }}>
                 <img
                   src={getPassageImage(firstQ)}
                   alt="Reading Passage Reference"
@@ -649,9 +649,9 @@ export default function Home() {
               </div>
             )}
             
-            <div style={{ flex: "1.5 1 450px", display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ color: "var(--color-text-muted)", fontSize: "0.9rem", fontWeight: "bold", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
-                NHÓM CÂU HỎI {firstQ} - {lastQ}
+                QUESTION GROUP {firstQ} - {lastQ}
               </div>
               
               {group.map((qNum) => {
@@ -668,15 +668,15 @@ export default function Home() {
                       <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
                         Câu {qNum}:
                       </span>
-                      {qInfo.question_text || "Chọn đáp án thích hợp:"}
+                      {qInfo.question_text || "Select the correct answer:"}
                     </div>
                     
-                    <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "10px" }}>
+                    <div className="options-container" style={{ flexDirection: "column", gap: "10px", width: "100%" }}>
                       {Object.keys(qInfo.options).map((key) => (
                         <div
                           key={key}
                           className={`option-card ${userAnswers[qNum] === key ? 'selected' : ''}`}
-                          style={{ flex: "1 1 200px", minWidth: "150px", padding: "10px 15px" }}
+                          style={{ width: "100%", padding: "10px 15px" }}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleSelectOption(qNum, key);
@@ -721,25 +721,25 @@ export default function Home() {
             <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
               Câu {qNum}:
             </span>
-            {qInfo.question_text || (isPhoto ? "Quan sát ảnh và chọn đáp án mô tả đúng nhất:" : "Nghe và chọn câu phản hồi phù hợp nhất:")}
+            {qInfo.question_text || (isPhoto ? "Observe the photo and choose the best statement:" : "Listen and choose the best response:")}
             
             {chosen === correctAns ? (
               <span className="review-badge-correct" style={{ marginLeft: "10px", fontSize: "0.85rem", backgroundColor: "var(--color-correct-light)", color: "var(--color-correct)", padding: "4px 8px", borderRadius: "6px", fontWeight: "bold" }}>
-                Đúng
+                Correct
               </span>
             ) : chosen ? (
               <span className="review-badge-wrong" style={{ marginLeft: "10px", fontSize: "0.85rem", backgroundColor: "var(--color-wrong-light)", color: "var(--color-wrong)", padding: "4px 8px", borderRadius: "6px", fontWeight: "bold" }}>
-                Sai (Đáp án: {correctAns})
+                Incorrect (Correct Answer: {correctAns})
               </span>
             ) : (
               <span className="review-badge-skipped" style={{ marginLeft: "10px", fontSize: "0.85rem", backgroundColor: "#f1f5f9", color: "#64748b", padding: "4px 8px", borderRadius: "6px", fontWeight: "bold" }}>
-                Chưa làm (Đáp án: {correctAns})
+                Skipped (Correct Answer: {correctAns})
               </span>
             )}
           </div>
           
           {isPhoto && getPassageImage(qNum) && (
-            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "600px" }}>
+            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "750px", width: "100%" }}>
               <img
                 src={getPassageImage(qNum)}
                 alt={`Part 1 Photo Q${qNum}`}
@@ -748,7 +748,7 @@ export default function Home() {
             </div>
           )}
           
-          <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "15px" }}>
+          <div className="options-container" style={{ flexDirection: "column", gap: "12px", width: "100%" }}>
             {Object.keys(qInfo.options).map((key) => {
               const isCorrect = key === correctAns;
               const isChosen = key === chosen;
@@ -761,7 +761,7 @@ export default function Home() {
                 <div
                   key={key}
                   className={`modal-option-card ${cardClass}`}
-                  style={{ flex: "1 1 200px", minWidth: "150px", pointerEvents: "none" }}
+                  style={{ width: "100%", pointerEvents: "none" }}
                 >
                   <div className="circle">
                     {isCorrect ? (
@@ -813,7 +813,7 @@ export default function Home() {
             
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ color: "var(--color-text-muted)", fontSize: "0.95rem", fontWeight: "bold", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
-                NHÓM CÂU HỎI {firstQ} - {lastQ}
+                QUESTION GROUP {firstQ} - {lastQ}
               </div>
               
               {group.map((qNum) => {
@@ -833,25 +833,25 @@ export default function Home() {
                         <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
                           Câu {qNum}:
                         </span>
-                        {qInfo.question_text || "Chọn đáp án thích hợp:"}
+                        {qInfo.question_text || "Select the correct answer:"}
                       </span>
                       
                       {chosen === correctAns ? (
                         <span className="review-badge-correct" style={{ fontSize: "0.8rem", backgroundColor: "var(--color-correct-light)", color: "var(--color-correct)", padding: "3px 6px", borderRadius: "4px", fontWeight: "bold" }}>
-                          Đúng
+                          Correct
                         </span>
                       ) : chosen ? (
                         <span className="review-badge-wrong" style={{ fontSize: "0.8rem", backgroundColor: "var(--color-wrong-light)", color: "var(--color-wrong)", padding: "3px 6px", borderRadius: "4px", fontWeight: "bold" }}>
-                          Sai (Đáp án: {correctAns})
+                          Incorrect (Correct Answer: {correctAns})
                         </span>
                       ) : (
                         <span className="review-badge-skipped" style={{ fontSize: "0.8rem", backgroundColor: "#f1f5f9", color: "#64748b", padding: "3px 6px", borderRadius: "4px", fontWeight: "bold" }}>
-                          Chưa làm (Đáp án: {correctAns})
+                          Skipped (Correct Answer: {correctAns})
                         </span>
                       )}
                     </div>
                     
-                    <div className="options-container" style={{ flexDirection: "row", flexWrap: "wrap", gap: "10px" }}>
+                    <div className="options-container" style={{ flexDirection: "column", gap: "10px", width: "100%" }}>
                       {Object.keys(qInfo.options).map((key) => {
                         const isCorrect = key === correctAns;
                         const isChosen = key === chosen;
@@ -864,7 +864,7 @@ export default function Home() {
                           <div
                             key={key}
                             className={`option-card modal-option-card ${cardClass}`}
-                            style={{ flex: "1 1 200px", minWidth: "150px", padding: "10px 15px", pointerEvents: "none" }}
+                            style={{ width: "100%", padding: "10px 15px", pointerEvents: "none" }}
                           >
                             <div className="circle">
                               {isCorrect ? (
@@ -910,15 +910,15 @@ export default function Home() {
         <div className="welcome-container">
           <div className="welcome-card">
             <h1 className="welcome-logo">TOEIC <span>Mock Test</span></h1>
-            <p>Trang web thi thử TOEIC Online chính thức - Đề 12</p>
+            <p>Official TOEIC Online Mock Test - Test 12</p>
             
             <div className="input-group">
-              <label className="input-label" htmlFor="student-name">HỌ VÀ TÊN THÍ SINH</label>
+              <label className="input-label" htmlFor="student-name">CANDIDATE FULL NAME</label>
               <input
                 id="student-name"
                 className="welcome-input"
                 type="text"
-                placeholder="Nhập tên của bạn để bắt đầu..."
+                placeholder="Enter your name to begin..."
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
               />
@@ -930,7 +930,7 @@ export default function Home() {
               onClick={handleStartExam}
               style={{ marginBottom: "15px" }}
             >
-              Bắt đầu bài thi
+              Start Test
             </button>
             
             <button
@@ -943,7 +943,7 @@ export default function Home() {
               }}
               onClick={handleFetchLeaderboard}
             >
-              Bảng xếp hạng công khai
+              Public Leaderboard
             </button>
           </div>
         </div>
@@ -953,28 +953,28 @@ export default function Home() {
       {screen === "leaderboard" && (
         <div className="welcome-container" style={{ padding: "40px 20px" }}>
           <div className="welcome-card" style={{ maxWidth: "800px" }}>
-            <h2 className="leaderboard-title">BẢNG XẾP HẠNG THI THỬ</h2>
+            <h2 className="leaderboard-title">PUBLIC LEADERBOARD</h2>
             
             {isFetchingLeaderboard ? (
-              <div style={{ padding: "40px", color: "var(--color-text-muted)" }}>Đang tải dữ liệu...</div>
+              <div style={{ padding: "40px", color: "var(--color-text-muted)" }}>Loading leaderboard...</div>
             ) : (
               <div className="leaderboard-table-container">
                 <table className="leaderboard-table">
                   <thead>
                     <tr>
-                      <th>Hạng</th>
-                      <th>Thí Sinh</th>
-                      <th>Điểm Số</th>
-                      <th>Nghe/Đọc</th>
-                      <th>Thời Gian</th>
-                      <th>Ngày Thi</th>
+                      <th>Rank</th>
+                      <th>Candidate</th>
+                      <th>Score</th>
+                      <th>L/R</th>
+                      <th>Time</th>
+                      <th>Date</th>
                     </tr>
                   </thead>
                   <tbody>
                     {leaderboard.length === 0 ? (
                       <tr>
                         <td colSpan="6" style={{ padding: "30px", color: "var(--color-text-muted)" }}>
-                          Chưa có lượt thi nào được ghi nhận.
+                          No test submissions recorded yet.
                         </td>
                       </tr>
                     ) : (
@@ -1020,7 +1020,7 @@ export default function Home() {
               }}
               onClick={() => setScreen("welcome")}
             >
-              Quay lại
+              Back
             </button>
           </div>
         </div>
@@ -1034,7 +1034,7 @@ export default function Home() {
             <h1 className="header-logo">TOEIC <span>Online</span></h1>
             <div className="header-info">
               <span style={{ fontWeight: 600, color: "var(--color-text-muted)" }}>
-                Thí sinh: <span style={{ color: "var(--color-text-main)" }}>{userName}</span>
+                Candidate: <span style={{ color: "var(--color-text-main)" }}>{userName}</span>
               </span>
               <div className={`timer-box ${isTimerPaused || showTransition ? 'timer-paused' : ''}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -1044,7 +1044,7 @@ export default function Home() {
                 {formatTime(timer)}
               </div>
               <button className="submit-btn" onClick={handleSubmitTest}>
-                Nộp bài
+                Submit
               </button>
             </div>
           </div>
@@ -1055,25 +1055,25 @@ export default function Home() {
               {/* Scrollable list of Q1 to Q100 */}
               <div className="listening-scroll-area">
                 {/* Part 1 */}
-                <div className="part-header">PART 1: PHOTO DESCRIPTION (Câu 1 - 6)</div>
+                <div className="part-header">PART 1: PHOTO DESCRIPTION (Questions 1 - 6)</div>
                 {Array.from({ length: 6 }, (_, i) => i + 1).map((qNum) => renderListeningQuestionCard(qNum))}
                 
                 {/* Part 2 */}
-                <div className="part-header">PART 2: QUESTION-RESPONSE (Câu 7 - 31)</div>
+                <div className="part-header">PART 2: QUESTION-RESPONSE (Questions 7 - 31)</div>
                 {Array.from({ length: 25 }, (_, i) => i + 7).map((qNum) => renderListeningQuestionCard(qNum))}
                 
                 {/* Part 3 */}
-                <div className="part-header">PART 3: CONVERSATIONS (Câu 32 - 70)</div>
+                <div className="part-header">PART 3: CONVERSATIONS (Questions 32 - 70)</div>
                 {renderGroupedListeningQuestions(32, 70)}
                 
                 {/* Part 4 */}
-                <div className="part-header">PART 4: TALKS (Câu 71 - 100)</div>
+                <div className="part-header">PART 4: TALKS (Questions 71 - 100)</div>
                 {renderGroupedListeningQuestions(71, 100)}
                 
                 {/* Bottom action button */}
                 <div className="listening-footer-action">
                   <button className="transition-btn" onClick={handleListeningDoneClick}>
-                    Chuyển sang phần thi Reading
+                    Proceed to Reading Section
                   </button>
                 </div>
               </div>
@@ -1086,21 +1086,21 @@ export default function Home() {
               {/* Scrollable list of Q101 to Q200 */}
               <div className="listening-scroll-area">
                 {/* Part 5 */}
-                <div className="part-header">PART 5: INCOMPLETE SENTENCES (Câu 101 - 130)</div>
+                <div className="part-header">PART 5: INCOMPLETE SENTENCES (Questions 101 - 130)</div>
                 {Array.from({ length: 30 }, (_, i) => i + 101).map((qNum) => renderReadingQuestionCard(qNum))}
                 
                 {/* Part 6 */}
-                <div className="part-header">PART 6: TEXT COMPLETION (Câu 131 - 146)</div>
+                <div className="part-header">PART 6: TEXT COMPLETION (Questions 131 - 146)</div>
                 {renderGroupedReadingQuestions(131, 146, true)}
                 
                 {/* Part 7 */}
-                <div className="part-header">PART 7: READING COMPREHENSION (Câu 147 - 200)</div>
+                <div className="part-header">PART 7: READING COMPREHENSION (Questions 147 - 200)</div>
                 {renderGroupedReadingQuestions(147, 200, false)}
                 
                 {/* Bottom action button */}
                 <div className="listening-footer-action" style={{ display: "flex", justifyContent: "center", gap: "20px", margin: "40px 0" }}>
                   <button className="submit-btn" style={{ padding: "15px 40px", fontSize: "1.1rem", height: "auto", borderRadius: "12px", width: "auto" }} onClick={handleSubmitTest}>
-                    Nộp bài thi
+                    Submit thi
                   </button>
                 </div>
               </div>
@@ -1115,21 +1115,21 @@ export default function Home() {
             <div className="modal-overlay">
               <div className="modal-content" style={{ textAlign: "center", maxWidth: "500px" }}>
                 <h3 className="modal-title" style={{ borderColor: "var(--color-secondary)" }}>
-                  Hoàn Thành Listening!
+                  Listening Section Completed!
                 </h3>
                 <p style={{ color: "var(--color-text-main)", marginBottom: "20px", fontSize: "1.05rem" }}>
                   Bạn đã kết thúc 100 câu phần Listening.
-                  Thời gian làm bài đang được tạm dừng. Hãy chuẩn bị sẵn sàng cho phần Reading.
+                  Time Elapsed đang được tạm dừng. Hãy chuẩn bị sẵn sàng cho phần Reading.
                 </p>
                 <p style={{ color: "var(--color-text-muted)", marginBottom: "30px", fontSize: "0.9rem" }}>
-                  Bấm nút bên dưới để tiếp tục làm Part 5 (Reading) và tính thời gian tiếp tục.
+                  Click the button below to start Part 5 (Reading) and resume the timer.
                 </p>
                 <button
                   className="welcome-btn"
                   onClick={handleStartReading}
                   style={{ width: "auto", padding: "12px 30px" }}
                 >
-                  Bắt đầu làm bài Reading
+                  Start Reading Section
                 </button>
               </div>
             </div>
@@ -1142,8 +1142,8 @@ export default function Home() {
         <div className="results-container">
           <div className="results-header">
             <p className="score-title">THI THỬ ONLINE TOEIC - ĐỀ 12</p>
-            <h1>Chúc mừng {userName} đã hoàn thành xong bài thi!</h1>
-            <p>Dưới đây là kết quả bài thi thử của bạn.</p>
+            <h1>Congratulations {userName}, you have completed the test!</h1>
+            <p>Here are your test results.</p>
             
             <div className="results-score-display">
               <div className="score-title">YOUR SCORE</div>
@@ -1157,19 +1157,19 @@ export default function Home() {
           {/* Quick stats cards */}
           <div className="results-stats-grid">
             <div className="stat-card correct">
-              <div className="stat-card-title">Trả lời đúng</div>
+              <div className="stat-card-title">Correct Answers</div>
               <div className="stat-card-value">{stats.correct} Câu hỏi</div>
             </div>
             <div className="stat-card wrong">
-              <div className="stat-card-title">Trả lời sai</div>
+              <div className="stat-card-title">Incorrect Answers</div>
               <div className="stat-card-value">{stats.wrong} Câu hỏi</div>
             </div>
             <div className="stat-card">
-              <div className="stat-card-title">Bỏ qua</div>
+              <div className="stat-card-title">Skipped</div>
               <div className="stat-card-value">{stats.skipped} Câu hỏi</div>
             </div>
             <div className="stat-card">
-              <div className="stat-card-title">Thời gian làm bài</div>
+              <div className="stat-card-title">Time Elapsed</div>
               <div className="stat-card-value">{formatTime(timeSpentOnSubmit)}</div>
             </div>
           </div>
@@ -1182,8 +1182,8 @@ export default function Home() {
                 <span>{stats.scaleScore.listening}/495</span>
               </h3>
               <p>
-                Số câu nghe trả lời chính xác: <strong>{stats.listeningCorrect}/100</strong> câu.
-                Bạn có khả năng nghe hiểu khá tốt các ngữ cảnh giao tiếp trong môi trường công sở thông thường.
+                Listening correct answers: <strong>{stats.listeningCorrect}/100</strong>. 
+                You have a good listening comprehension ability in typical workplace contexts.
               </p>
             </div>
             
@@ -1193,51 +1193,51 @@ export default function Home() {
                 <span>{stats.scaleScore.reading}/495</span>
               </h3>
               <p>
-                Số câu đọc trả lời chính xác: <strong>{stats.readingCorrect}/100</strong> câu.
-                Bạn có thể hiểu hầu hết các văn bản thông báo, email và bài đọc trung bình trong môi trường làm việc.
+                Reading correct answers: <strong>{stats.readingCorrect}/100</strong>. 
+                You can understand most workplace notifications, emails, and moderate-length passages.
               </p>
             </div>
           </div>
           
           {/* Review Workspace */}
-          <h2 className="analysis-title" style={{ marginTop: "50px", marginBottom: "20px" }}>Xem lại đáp án chi tiết</h2>
+          <h2 className="analysis-title" style={{ marginTop: "50px", marginBottom: "20px" }}>Detailed Answer Key</h2>
           <div className="review-workspace" style={{ display: "flex", gap: "20px", overflow: "hidden", height: "80vh", border: "1px solid var(--color-border)", borderRadius: "16px", backgroundColor: "#f8fafc" }}>
             
             {/* Scrollable list of Q1 to Q200 */}
             <div className="review-scroll-area" style={{ flex: "1", overflowY: "auto", padding: "30px 40px" }}>
               {/* Part 1 */}
-              <div className="part-header" id="review-part-1">PART 1: PHOTO DESCRIPTION (Câu 1 - 6)</div>
+              <div className="part-header" id="review-part-1">PART 1: PHOTO DESCRIPTION (Questions 1 - 6)</div>
               {Array.from({ length: 6 }, (_, i) => i + 1).map((qNum) => renderReviewQuestionCard(qNum))}
               
               {/* Part 2 */}
-              <div className="part-header" id="review-part-2">PART 2: QUESTION-RESPONSE (Câu 7 - 31)</div>
+              <div className="part-header" id="review-part-2">PART 2: QUESTION-RESPONSE (Questions 7 - 31)</div>
               {Array.from({ length: 25 }, (_, i) => i + 7).map((qNum) => renderReviewQuestionCard(qNum))}
               
               {/* Part 3 */}
-              <div className="part-header" id="review-part-3">PART 3: CONVERSATIONS (Câu 32 - 70)</div>
+              <div className="part-header" id="review-part-3">PART 3: CONVERSATIONS (Questions 32 - 70)</div>
               {renderGroupedReviewQuestions(32, 70, false)}
               
               {/* Part 4 */}
-              <div className="part-header" id="review-part-4">PART 4: TALKS (Câu 71 - 100)</div>
+              <div className="part-header" id="review-part-4">PART 4: TALKS (Questions 71 - 100)</div>
               {renderGroupedReviewQuestions(71, 100, false)}
               
               {/* Part 5 */}
-              <div className="part-header" id="review-part-5">PART 5: INCOMPLETE SENTENCES (Câu 101 - 130)</div>
+              <div className="part-header" id="review-part-5">PART 5: INCOMPLETE SENTENCES (Questions 101 - 130)</div>
               {Array.from({ length: 30 }, (_, i) => i + 101).map((qNum) => renderReviewQuestionCard(qNum))}
               
               {/* Part 6 */}
-              <div className="part-header" id="review-part-6">PART 6: TEXT COMPLETION (Câu 131 - 146)</div>
+              <div className="part-header" id="review-part-6">PART 6: TEXT COMPLETION (Questions 131 - 146)</div>
               {renderGroupedReviewQuestions(131, 146, true)}
               
               {/* Part 7 */}
-              <div className="part-header" id="review-part-7">PART 7: READING COMPREHENSION (Câu 147 - 200)</div>
+              <div className="part-header" id="review-part-7">PART 7: READING COMPREHENSION (Questions 147 - 200)</div>
               {renderGroupedReviewQuestions(147, 200, false)}
             </div>
             
             {/* Sidebar Navigation */}
             <div className="review-sidebar" style={{ width: "250px", borderLeft: "1px solid var(--color-border)", backgroundColor: "#ffffff", overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ fontWeight: "bold", fontSize: "1rem", color: "var(--color-text-main)", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
-                Danh sách câu hỏi
+                Questions List
               </div>
               
               <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
@@ -1289,7 +1289,7 @@ export default function Home() {
               style={{ maxWidth: "250px" }}
               onClick={() => handleFetchLeaderboard()}
             >
-              Xem bảng xếp hạng
+              View Leaderboard
             </button>
             <button
               className="welcome-btn"
@@ -1304,7 +1304,7 @@ export default function Home() {
                 setScreen("welcome");
               }}
             >
-              Làm bài thi mới
+              Take a New Test
             </button>
           </div>
         </div>
