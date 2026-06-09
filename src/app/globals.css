@@ -339,9 +339,10 @@ input {
 }
 
 .options-container {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   gap: 12px;
+  width: 100% !important;
 }
 
 .option-card {

@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Thi Thử Online TOEIC - Đề 12",
-  description: "Trang web thi thử TOEIC Online chính thức - Đề 12 với đầy đủ 200 câu hỏi và đáp án.",
+  title: "TOEIC Online Mock Test - Test 12",
+  description: "Official TOEIC Online Mock Test - Test 12 with full 200 questions and answers.",
 };
 
 export default function RootLayout({ children }) {

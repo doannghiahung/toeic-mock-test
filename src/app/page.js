@@ -476,13 +476,13 @@ export default function Home() {
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div className="question-title" style={{ fontSize: "1.1rem" }}>
             <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
-              Câu {qNum}:
+              Question {qNum}:
             </span>
             {qInfo.question_text || (isPhoto ? "Observe the photo and choose the best statement:" : "Listen and choose the best response:")}
           </div>
           
           {isPhoto && getPassageImage(qNum) && (
-            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "750px", width: "100%" }}>
+            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "950px", width: "100%" }}>
               <img
                 src={getPassageImage(qNum)}
                 alt={`Part 1 Photo Q${qNum}`}
@@ -491,7 +491,7 @@ export default function Home() {
             </div>
           )}
           
-          <div className="options-container" style={{ flexDirection: "column", gap: "12px", width: "100%" }}>
+          <div className="options-container" style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
             {Object.keys(qInfo.options).map((key) => (
               <div
                 key={key}
@@ -525,7 +525,7 @@ export default function Home() {
         <div key={q} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
           <div style={{ display: "flex", gap: "25px", flexDirection: "column" }}>
             {hasGraphic && (
-              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "800px", width: "100%", margin: "0 auto", padding: "10px", backgroundColor: "#fafafa" }}>
+              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "950px", width: "100%", margin: "0 auto", padding: "10px", backgroundColor: "#fafafa" }}>
                 <img
                   src={getPassageImage(q)}
                   alt="Graphic Reference"
@@ -551,12 +551,12 @@ export default function Home() {
                   >
                     <div className="question-title">
                       <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
-                        Câu {qNum}:
+                        Question {qNum}:
                       </span>
-                      {qInfo.question_text || `Chọn đáp án đúng nhất cho câu hỏi số ${qNum}:`}
+                      {qInfo.question_text || `Choose the best response for question ${qNum}:`}
                     </div>
                     
-                    <div className="options-container" style={{ flexDirection: "column", gap: "10px", width: "100%" }}>
+                    <div className="options-container" style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
                       {Object.keys(qInfo.options).map((key) => (
                         <div
                           key={key}
@@ -598,12 +598,12 @@ export default function Home() {
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div className="question-title" style={{ fontSize: "1.1rem" }}>
             <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
-              Câu {qNum}:
+              Question {qNum}:
             </span>
             {qInfo.question_text || "Select the correct answer:"}
           </div>
           
-          <div className="options-container" style={{ flexDirection: "column", gap: "12px", width: "100%" }}>
+          <div className="options-container" style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
             {Object.keys(qInfo.options).map((key) => (
               <div
                 key={key}
@@ -640,7 +640,7 @@ export default function Home() {
         <div key={firstQ} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
           <div style={{ display: "flex", gap: "30px", flexDirection: "column" }}>
             {hasGraphic && (
-              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", backgroundColor: "#fafafa", maxWidth: "800px", width: "100%", margin: "0 auto", padding: "10px" }}>
+              <div style={{ border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", backgroundColor: "#fafafa", maxWidth: "950px", width: "100%", margin: "0 auto", padding: "10px" }}>
                 <img
                   src={getPassageImage(firstQ)}
                   alt="Reading Passage Reference"
@@ -666,12 +666,12 @@ export default function Home() {
                   >
                     <div className="question-title">
                       <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
-                        Câu {qNum}:
+                        Question {qNum}:
                       </span>
                       {qInfo.question_text || "Select the correct answer:"}
                     </div>
                     
-                    <div className="options-container" style={{ flexDirection: "column", gap: "10px", width: "100%" }}>
+                    <div className="options-container" style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
                       {Object.keys(qInfo.options).map((key) => (
                         <div
                           key={key}
@@ -719,7 +719,7 @@ export default function Home() {
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div className="question-title" style={{ fontSize: "1.1rem" }}>
             <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
-              Câu {qNum}:
+              Question {qNum}:
             </span>
             {qInfo.question_text || (isPhoto ? "Observe the photo and choose the best statement:" : "Listen and choose the best response:")}
             
@@ -739,7 +739,7 @@ export default function Home() {
           </div>
           
           {isPhoto && getPassageImage(qNum) && (
-            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "750px", width: "100%" }}>
+            <div style={{ textAlign: "center", marginBottom: "15px", border: "1px solid var(--color-border)", borderRadius: "8px", overflow: "hidden", maxWidth: "950px", width: "100%" }}>
               <img
                 src={getPassageImage(qNum)}
                 alt={`Part 1 Photo Q${qNum}`}
@@ -748,7 +748,7 @@ export default function Home() {
             </div>
           )}
           
-          <div className="options-container" style={{ flexDirection: "column", gap: "12px", width: "100%" }}>
+          <div className="options-container" style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
             {Object.keys(qInfo.options).map((key) => {
               const isCorrect = key === correctAns;
               const isChosen = key === chosen;
@@ -802,7 +802,7 @@ export default function Home() {
         <div key={firstQ} style={{ border: "1px solid var(--color-border)", borderRadius: "16px", padding: "25px", backgroundColor: "#ffffff", marginBottom: "35px", boxShadow: "var(--shadow-sm)" }}>
           <div style={{ display: "flex", gap: "30px", flexDirection: "column" }}>
             {hasGraphic && (
-              <div style={{ textAlign: "center", border: "1px solid var(--color-border)", borderRadius: "12px", overflow: "hidden", backgroundColor: "#fafafa", padding: "15px", maxWidth: "800px", margin: "0 auto" }}>
+              <div style={{ textAlign: "center", border: "1px solid var(--color-border)", borderRadius: "12px", overflow: "hidden", backgroundColor: "#fafafa", padding: "15px", maxWidth: "950px", margin: "0 auto" }}>
                 <img
                   src={getPassageImage(firstQ)}
                   alt="Review Passage Reference"
@@ -831,7 +831,7 @@ export default function Home() {
                     <div className="question-title" style={{ fontSize: "1.05rem", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px" }}>
                       <span>
                         <span style={{ color: "var(--color-primary)", fontWeight: "bold", marginRight: "8px" }}>
-                          Câu {qNum}:
+                          Question {qNum}:
                         </span>
                         {qInfo.question_text || "Select the correct answer:"}
                       </span>
@@ -851,7 +851,7 @@ export default function Home() {
                       )}
                     </div>
                     
-                    <div className="options-container" style={{ flexDirection: "column", gap: "10px", width: "100%" }}>
+                    <div className="options-container" style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%" }}>
                       {Object.keys(qInfo.options).map((key) => {
                         const isCorrect = key === correctAns;
                         const isChosen = key === chosen;
@@ -1100,7 +1100,7 @@ export default function Home() {
                 {/* Bottom action button */}
                 <div className="listening-footer-action" style={{ display: "flex", justifyContent: "center", gap: "20px", margin: "40px 0" }}>
                   <button className="submit-btn" style={{ padding: "15px 40px", fontSize: "1.1rem", height: "auto", borderRadius: "12px", width: "auto" }} onClick={handleSubmitTest}>
-                    Submit thi
+                    Submit Test
                   </button>
                 </div>
               </div>
@@ -1118,8 +1118,8 @@ export default function Home() {
                   Listening Section Completed!
                 </h3>
                 <p style={{ color: "var(--color-text-main)", marginBottom: "20px", fontSize: "1.05rem" }}>
-                  Bạn đã kết thúc 100 câu phần Listening.
-                  Time Elapsed đang được tạm dừng. Hãy chuẩn bị sẵn sàng cho phần Reading.
+                  You have completed the 100 questions of the Listening section.
+                  The timer is paused. Please prepare for the Reading section.
                 </p>
                 <p style={{ color: "var(--color-text-muted)", marginBottom: "30px", fontSize: "0.9rem" }}>
                   Click the button below to start Part 5 (Reading) and resume the timer.
@@ -1141,7 +1141,7 @@ export default function Home() {
       {screen === "result" && stats && (
         <div className="results-container">
           <div className="results-header">
-            <p className="score-title">THI THỬ ONLINE TOEIC - ĐỀ 12</p>
+            <p className="score-title">TOEIC ONLINE MOCK TEST - TEST 12</p>
             <h1>Congratulations {userName}, you have completed the test!</h1>
             <p>Here are your test results.</p>
             
@@ -1158,15 +1158,15 @@ export default function Home() {
           <div className="results-stats-grid">
             <div className="stat-card correct">
               <div className="stat-card-title">Correct Answers</div>
-              <div className="stat-card-value">{stats.correct} Câu hỏi</div>
+              <div className="stat-card-value">{stats.correct} Questions</div>
             </div>
             <div className="stat-card wrong">
               <div className="stat-card-title">Incorrect Answers</div>
-              <div className="stat-card-value">{stats.wrong} Câu hỏi</div>
+              <div className="stat-card-value">{stats.wrong} Questions</div>
             </div>
             <div className="stat-card">
               <div className="stat-card-title">Skipped</div>
-              <div className="stat-card-value">{stats.skipped} Câu hỏi</div>
+              <div className="stat-card-value">{stats.skipped} Questions</div>
             </div>
             <div className="stat-card">
               <div className="stat-card-title">Time Elapsed</div>
