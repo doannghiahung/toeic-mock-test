@@ -1015,11 +1015,20 @@ input {
   border-right: 1px solid var(--color-border);
 }
 
-.left-pane-image-container {
+.left-pane-image-container,
+.left-pane-scroll-container {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 15px;
+}
+
+.left-pane-image-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  scroll-margin-top: 20px;
 }
 
 .left-pane-header {

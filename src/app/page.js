@@ -208,9 +208,18 @@ export default function Home() {
     setCurrentQuestion(num);
     
     setTimeout(() => {
+      // 1. Scroll the question card into view in the middle pane
       const el = document.getElementById(`q-card-${num}`);
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      
+      // 2. Scroll the reference image into view in the left pane
+      const group = getQuestionGroup(num);
+      const startNum = group[0];
+      const imgEl = document.getElementById(`left-img-${startNum}`);
+      if (imgEl) {
+        imgEl.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }, 50);
   };
@@ -301,6 +310,14 @@ export default function Home() {
       ...prev,
       [qNum]: option
     }));
+    
+    // Auto-scroll left pane to the corresponding reference image when question option is selected
+    const group = getQuestionGroup(qNum);
+    const startNum = group[0];
+    const imgEl = document.getElementById(`left-img-${startNum}`);
+    if (imgEl) {
+      imgEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
   };
   
   const handleNext = () => {
@@ -419,56 +436,78 @@ export default function Home() {
   const stats = screen === "result" ? getExamStats() : null;
   const currentQInfo = questionsData[currentQuestion.toString()];
 
-  // Helper to render the left pane reference image or instructions placeholder
-  const renderLeftPaneImage = (qNum) => {
-    const imgPath = getPassageImage(qNum);
-    const part = getPartFromQuestion(qNum);
-    
-    if (imgPath) {
-      return (
-        <div className="left-pane-image-container">
-          <div className="left-pane-header">
-            Reference Graphic / Passage (Question {getGroupRangeLabel(qNum).split(" / ")[0]})
-          </div>
-          <img
-            src={imgPath}
-            alt={`Reference for Question ${qNum}`}
-            className="left-pane-actual-image"
-          />
-        </div>
-      );
-    }
-    
-    let title = "";
-    let desc = "";
-    if (part === 2) {
-      title = "Part 2: Question-Response";
-      desc = "Listen to the audio questions and responses, then select the best response option (A, B, or C) on the right.";
-    } else if (part === 3) {
-      title = "Part 3: Conversations";
-      desc = "Listen to the audio conversation, then answer the questions on the right. (No graphic reference for this conversation)";
-    } else if (part === 4) {
-      title = "Part 4: Talks";
-      desc = "Listen to the audio talk, then answer the questions on the right. (No graphic reference for this talk)";
-    } else if (part === 5) {
-      title = "Part 5: Incomplete Sentences";
-      desc = "Choose the best word or phrase (A, B, C, or D) to complete each sentence.";
-    } else {
-      title = `Part ${part}`;
-      desc = "Select the best answer option for the questions on the right.";
-    }
+  // Helper to render the scrollable list of Listening images/passages
+  const renderListeningImagesList = () => {
+    const items = [
+      { label: "Part 1 - Photo (Question 1)", path: "/assets/part1_q1.png", qNum: 1 },
+      { label: "Part 1 - Photo (Question 2)", path: "/assets/part1_q2.png", qNum: 2 },
+      { label: "Part 1 - Photo (Question 3)", path: "/assets/part1_q3.png", qNum: 3 },
+      { label: "Part 1 - Photo (Question 4)", path: "/assets/part1_q4.png", qNum: 4 },
+      { label: "Part 1 - Photo (Question 5)", path: "/assets/part1_q5.png", qNum: 5 },
+      { label: "Part 1 - Photo (Question 6)", path: "/assets/part1_q6.png", qNum: 6 },
+      { label: "Part 3 - Graphic Reference (Questions 65 - 67)", path: "/assets/graphics/graphic_65_67.png", qNum: 65 },
+      { label: "Part 3 - Graphic Reference (Questions 68 - 70)", path: "/assets/graphics/graphic_68_70.png", qNum: 68 },
+      { label: "Part 4 - Graphic Reference (Questions 92 - 94)", path: "/assets/graphics/graphic_92_94.png", qNum: 92 },
+      { label: "Part 4 - Graphic Reference (Questions 95 - 97)", path: "/assets/graphics/graphic_95_97.png", qNum: 95 },
+      { label: "Part 4 - Graphic Reference (Questions 98 - 100)", path: "/assets/graphics/graphic_98_100.png", qNum: 98 }
+    ];
     
     return (
-      <div className="left-pane-placeholder">
-        <div className="placeholder-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: "48px", height: "48px", color: "var(--color-secondary)", marginBottom: "15px" }}>
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" />
-          </svg>
+      <div className="left-pane-scroll-container">
+        <div style={{ paddingBottom: "15px", borderBottom: "1px solid var(--color-border)", marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "1.1rem", color: "var(--color-primary)", fontWeight: "bold" }}>Listening Section Reference Images</h3>
+          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Scroll through the photos and graphics below as you answer the questions.</p>
         </div>
-        <h3>{title}</h3>
-        <p>{desc}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px", width: "100%" }}>
+          {items.map((item) => (
+            <div key={item.qNum} id={`left-img-${item.qNum}`} className="left-pane-image-item">
+              <div className="left-pane-header">{item.label}</div>
+              <img src={item.path} alt={item.label} className="left-pane-actual-image" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // Helper to render the scrollable list of Reading passages
+  const renderReadingImagesList = () => {
+    const items = [
+      { label: "Part 6 - Passage (Questions 131 - 134)", path: "/assets/passages/passage_131_134.png", qNum: 131 },
+      { label: "Part 6 - Passage (Questions 135 - 138)", path: "/assets/passages/passage_135_138.png", qNum: 135 },
+      { label: "Part 6 - Passage (Questions 139 - 142)", path: "/assets/passages/passage_139_142.png", qNum: 139 },
+      { label: "Part 6 - Passage (Questions 143 - 146)", path: "/assets/passages/passage_143_146.png", qNum: 143 },
+      { label: "Part 7 - Passage (Questions 147 - 148)", path: "/assets/passages/passage_147_148.png", qNum: 147 },
+      { label: "Part 7 - Passage (Questions 149 - 150)", path: "/assets/passages/passage_149_150.png", qNum: 149 },
+      { label: "Part 7 - Passage (Questions 151 - 152)", path: "/assets/passages/passage_151_152.png", qNum: 151 },
+      { label: "Part 7 - Passage (Questions 153 - 154)", path: "/assets/passages/passage_153_154.png", qNum: 153 },
+      { label: "Part 7 - Passage (Questions 155 - 157)", path: "/assets/passages/passage_155_157.png", qNum: 155 },
+      { label: "Part 7 - Passage (Questions 158 - 160)", path: "/assets/passages/passage_158_160.png", qNum: 158 },
+      { label: "Part 7 - Passage (Questions 161 - 163)", path: "/assets/passages/passage_161_163.png", qNum: 161 },
+      { label: "Part 7 - Passage (Questions 164 - 167)", path: "/assets/passages/passage_164_167.png", qNum: 164 },
+      { label: "Part 7 - Passage (Questions 168 - 171)", path: "/assets/passages/passage_172_175.png", qNum: 168 },
+      { label: "Part 7 - Passage (Questions 172 - 175)", path: "/assets/passages/passage_172_175.png", qNum: 172 },
+      { label: "Part 7 - Passage (Questions 176 - 180)", path: "/assets/passages/passage_176_180.png", qNum: 176 },
+      { label: "Part 7 - Passage (Questions 181 - 185)", path: "/assets/passages/passage_181_185.png", qNum: 181 },
+      { label: "Part 7 - Passage (Questions 186 - 190)", path: "/assets/passages/passage_186_190.png", qNum: 186 },
+      { label: "Part 7 - Passage (Questions 191 - 195)", path: "/assets/passages/passage_191_195.png", qNum: 191 },
+      { label: "Part 7 - Passage (Questions 196 - 200)", path: "/assets/passages/passage_196_200.png", qNum: 196 }
+    ];
+
+    return (
+      <div className="left-pane-scroll-container">
+        <div style={{ paddingBottom: "15px", borderBottom: "1px solid var(--color-border)", marginBottom: "20px" }}>
+          <h3 style={{ fontSize: "1.1rem", color: "var(--color-primary)", fontWeight: "bold" }}>Reading Section Passages</h3>
+          <p style={{ fontSize: "0.85rem", color: "var(--color-text-muted)" }}>Scroll through the passages below as you answer the questions.</p>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "40px", width: "100%" }}>
+          {items.map((item) => (
+            <div key={item.qNum} id={`left-img-${item.qNum}`} className="left-pane-image-item">
+              <div className="left-pane-header">{item.label}</div>
+              <img src={item.path} alt={item.label} className="left-pane-actual-image" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   };
@@ -1076,9 +1115,9 @@ export default function Home() {
           {/* Main workspace */}
           {currentQuestion <= 100 ? (
             <div className="listening-workspace">
-              {/* Left pane: Fixed Image/Passage */}
+              {/* Left pane: Scrollable reference images list */}
               <div className="left-image-pane">
-                {renderLeftPaneImage(currentQuestion)}
+                {renderListeningImagesList()}
               </div>
               
               {/* Scrollable list of Q1 to Q100 */}
@@ -1112,9 +1151,9 @@ export default function Home() {
             </div>
           ) : (
             <div className="listening-workspace">
-              {/* Left pane: Fixed Image/Passage */}
+              {/* Left pane: Scrollable reference images list */}
               <div className="left-image-pane">
-                {renderLeftPaneImage(currentQuestion)}
+                {renderReadingImagesList()}
               </div>
               
               {/* Scrollable list of Q101 to Q200 */}
